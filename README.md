@@ -38,6 +38,7 @@ The challenge consists of the creation of a fishing game with Unity.
 The player controls a hook that dives in the water from the top of the playable area. Player's controller:
 - It is possible to control the hook to go up or down only
 - The hook stands in the middle of the playable area
+- Use **Input System** [package](https://docs.unity3d.com/2023.1/Documentation/Manual/com.unity.inputsystem.html) for the player input controller
 
 ### NPC
 The main objective of the game is to catch as many fish as possible. Each existing fish will be an NPC.
