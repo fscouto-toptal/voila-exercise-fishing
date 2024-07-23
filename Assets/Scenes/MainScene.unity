@@ -245,6 +245,10 @@ PrefabInstance:
       propertyPath: scoreUI
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5211912919722096405, guid: 4f58b4b5b736045ea92971f99bcce975, type: 3}
+      propertyPath: maxTimePlayingInSeconds
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 6695312046847440330, guid: 4f58b4b5b736045ea92971f99bcce975, type: 3}
       propertyPath: m_RootOrder
       value: 3

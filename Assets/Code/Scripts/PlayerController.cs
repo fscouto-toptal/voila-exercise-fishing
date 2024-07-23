@@ -55,7 +55,11 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
+            // Inform game controller about enemy caught
             gameController.CatchEnemy(other.transform.parent.gameObject.GetInstanceID());
+
+            // Inform enemy it was caught
+            other.transform.parent.GetComponent<EnemyController>().OnCatch();
         }
     }
 }

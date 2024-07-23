@@ -64,10 +64,10 @@ public class EnemyController : MonoBehaviour
             enemyPoints = enemyOption.points;
 
             // Create a new instance of the selected sprite, as a child of this game object
-            Instantiate(sprite, gameObject.transform, worldPositionStays:false);
+            var newEnemy = Instantiate(sprite, gameObject.transform, worldPositionStays:false);
 
             // Assign the animator for the selected sprite
-            animator = sprite.GetComponent<Animator>();
+            animator = newEnemy.GetComponent<Animator>();
 
             // Get spawning height
             var spawningHeight = GetSpawningHeight();
@@ -93,6 +93,14 @@ public class EnemyController : MonoBehaviour
             // Release the object
             DestroyMe();
         }
+    }
+
+    // Enemy was catch
+    public void OnCatch()
+    {
+        moveSpeed = 0f;
+        animator.SetBool("Caught", true);
+        Invoke("DestroyMe", 2f);
     }
 
     // Randomly set the final spawning position

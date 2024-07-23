@@ -8,12 +8,15 @@ using UnityEngine;
 // Main Gameplay Controller
 public class GameController : MonoBehaviour
 {
+    // Enemy Prefab
     public GameObject enemy;
     // Interval between Enemy spawning
     public float spawnIntervalInSeconds = 2f;
     // Internal countdown for the next spawn
     private float nextSpawnCountdown = 2f;
-    
+    // Max time playing
+    public float maxTimePlayingInSeconds = 30f;
+
     // Internal map of active enemies points, by instance ID
     private Dictionary<int, int> enemiesPointsById = new Dictionary<int, int>();
 
@@ -49,11 +52,18 @@ public class GameController : MonoBehaviour
     void Start()
     {
         GameState.Score = 0;
+        GameState.TimeElapsed = 0f;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameState.TimeElapsed >= maxTimePlayingInSeconds)
+        {
+            enabled = false;
+        }
+        GameState.TimeElapsed += Time.deltaTime;
+
         nextSpawnCountdown -= Time.deltaTime;
         if (nextSpawnCountdown <= 0)
         {
@@ -68,6 +78,7 @@ public class GameController : MonoBehaviour
     // Render UI
     void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 200, 50), $"Score: {GameState.Score.ToString()}");
+        GUI.Label(new Rect(10, 10, 200, 50), $"Time Left: {Math.Round(maxTimePlayingInSeconds - GameState.TimeElapsed, 3).ToString()} seconds");
+        GUI.Label(new Rect(10, 40, 200, 50), $"Score: {GameState.Score.ToString()}");
     }
 }
