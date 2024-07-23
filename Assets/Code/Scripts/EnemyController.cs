@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Xml.Schema;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 // Possible options of enemies to instantiate
@@ -13,6 +16,7 @@ public struct EnemyOption
 {
     public GameObject sprite;
     public int probability;
+    public int points;
 }
 
 // Controller for Enemy behavior
@@ -20,6 +24,10 @@ public class EnemyController : MonoBehaviour
 {
     // List of all types of enemies available
     public EnemyOption[] enemies;
+    // Holds reference to the game controller
+    public GameObject gameControllerObject;
+    // Holds reference to the game controller script
+    private GameController gameController;
     // Holds reference to the sprite animator
     private Animator animator;
 
@@ -39,13 +47,22 @@ public class EnemyController : MonoBehaviour
     // Constant to control the movement speed
     public float moveSpeed = 8f;
 
+    // How many points the player earns if this enemy is caught
+    private int enemyPoints;
+
     // Init internal references
     void Start()
     {
-        var sprite = PickRandomSprite();
+        gameController = gameControllerObject.GetComponent<GameController>();
+
+        var enemyOption = PickRandomEnemy();
+        var sprite = enemyOption.sprite;
 
         if (sprite != null)
         {
+            // Set points for current enemy
+            enemyPoints = enemyOption.points;
+
             // Create a new instance of the selected sprite, as a child of this game object
             Instantiate(sprite, gameObject.transform, worldPositionStays:false);
 
@@ -57,6 +74,8 @@ public class EnemyController : MonoBehaviour
 
             // Set spawning position
             SetSpawningPosition(spawningHeight);
+
+            gameController.RegisterEnemy(gameObject.GetInstanceID(), enemyPoints);
         }
     }
 
@@ -72,7 +91,7 @@ public class EnemyController : MonoBehaviour
         )
         {
             // Release the object
-            Destroy(gameObject);
+            DestroyMe();
         }
     }
 
@@ -101,10 +120,10 @@ public class EnemyController : MonoBehaviour
     }
 
     // Randomly pick the sprite
-    GameObject PickRandomSprite()
+    EnemyOption PickRandomEnemy()
     {
-        // Ordered array of instantiable sprites
-        var sprites = enemies.Select(e => e.sprite).ToList();
+        // Ordered array of instantiable enemies
+        var options = enemies.ToList();
         // Ordered array of sprites probabilities
         var probs = enemies.Select(e => e.probability).ToList();
 
@@ -118,12 +137,19 @@ public class EnemyController : MonoBehaviour
         for (var i = 0; i < probs.Count; i++) {
             accumulated += (float)probs[i] / total;
             if (chosen <= accumulated) {
-                return sprites[i];
+                return options[i];
             }
         }
         
         // Remove the enemy because there is no sprite selected
+        DestroyMe();
+        return new EnemyOption();
+    }
+
+    // Destroy this Enemy
+    void DestroyMe()
+    {
+        gameController.ReleaseEnemy(GetInstanceID());
         Destroy(gameObject);
-        return null;
     }
 }

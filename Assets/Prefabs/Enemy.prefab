@@ -47,9 +47,12 @@ MonoBehaviour:
   enemies:
   - sprite: {fileID: 8542492122885514873, guid: c2f9b7136270044c0a7aad319e023872, type: 3}
     probability: 25
+    points: 3
+  gameControllerObject: {fileID: 6844425308818917366, guid: 4f58b4b5b736045ea92971f99bcce975, type: 3}
   noSpawnProb: 0.2
   leftSpawnLimit: -22
   rightSpawnLimit: 22
   topSpawnLimit: -7
   bottomSpawnLimit: 7
   moveSpeed: 8
+  enemyPoints: 0

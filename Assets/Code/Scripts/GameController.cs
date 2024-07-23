@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 // Main Gameplay Controller
@@ -10,6 +13,43 @@ public class GameController : MonoBehaviour
     public float spawnIntervalInSeconds = 2f;
     // Internal countdown for the next spawn
     private float nextSpawnCountdown = 2f;
+    
+    // Internal map of active enemies points, by instance ID
+    private Dictionary<int, int> enemiesPointsById = new Dictionary<int, int>();
+
+    // Register new enemy, so we can manage its lifecycle
+    public void RegisterEnemy(int instanceId, int points)
+    {
+        // Saves the enemy points, indexed by Instance ID
+        enemiesPointsById.Add(instanceId, points);
+    }
+
+    // Add points to current gameplay
+    public void CatchEnemy(int instanceId)
+    {
+        Debug.Log($"Caught: {instanceId} - Keys: {String.Join(",", enemiesPointsById.Keys)} - Points: {GameState.Score}");
+        if (enemiesPointsById.ContainsKey(instanceId))
+        {
+            Debug.Log($"Points: {GameState.Score}");
+            GameState.Score += enemiesPointsById[instanceId];
+            enemiesPointsById.Remove(instanceId);
+        }
+    }
+
+    // Remove reference to Enemy
+    public void ReleaseEnemy(int instanceId)
+    {
+        if (enemiesPointsById.ContainsKey(instanceId))
+        {
+            enemiesPointsById.Remove(instanceId);
+        }
+    }
+
+    // Init internal references
+    void Start()
+    {
+        GameState.Score = 0;
+    }
 
     // Update is called once per frame
     void Update()
@@ -17,8 +57,17 @@ public class GameController : MonoBehaviour
         nextSpawnCountdown -= Time.deltaTime;
         if (nextSpawnCountdown <= 0)
         {
-            Instantiate(enemy);
+            // Instantiate new enemy
+            var newEnemy = Instantiate(enemy);
+
+            // Saves the enemy points, indexed by Instance ID
             nextSpawnCountdown = spawnIntervalInSeconds;
         }
+    }
+
+    // Render UI
+    void OnGUI()
+    {
+        GUI.Label(new Rect(10, 10, 200, 50), $"Score: {GameState.Score.ToString()}");
     }
 }
